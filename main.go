@@ -26,11 +26,22 @@ func main() {
 type Book struct {
 	Title  string `json:"title"`
 	Author string `json:"author"`
+	// json:"-" not show the field
+	Password string `json:"-"`
+	// json:"-," show - instead Email
+	Email string `json:"-,"`
+	// omitempty , if empty not show lastname
+	LastName string `json:"lastname,omitempty"`
 }
 
 // ShowBooks in json
 func ShowBooks(w http.ResponseWriter, r *http.Request) {
-	book := Book{"12 Rules of Life: An Antitode to Caos", "Jordan Peterson"}
+	book := Book{
+		"12 Rules of Life: An Antitode to Caos",
+		"Jordan Peterson",
+		"123",
+		"dalton@example.com",
+		""}
 
 	js, err := json.Marshal(book)
 	if err != nil {
