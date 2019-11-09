@@ -1,23 +1,45 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
-
-	"github.com/codegangsta/negroni"
 )
 
 func main() {
 
 	// Middleware stack
-	n := negroni.New(
+	/* n := negroni.New(
 		negroni.NewRecovery(),
 		negroni.HandlerFunc(MyFirstGoMiddleware),
 		negroni.NewLogger(),
 		negroni.NewStatic(http.Dir("public")),
 	)
 
-	n.Run(":8080")
+	n.Run(":8080")*/
+
+	http.HandleFunc("/", ShowBooks)
+	http.ListenAndServe(":8080", nil)
+}
+
+// Book struct
+type Book struct {
+	Title  string `json:"title"`
+	Author string `json:"author"`
+}
+
+// ShowBooks in json
+func ShowBooks(w http.ResponseWriter, r *http.Request) {
+	book := Book{"12 Rules of Life: An Antitode to Caos", "Jordan Peterson"}
+
+	js, err := json.Marshal(book)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
 }
 
 // MyFirstGoMiddleware this is my first Middleware make in Go Lang
