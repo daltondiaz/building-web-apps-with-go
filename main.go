@@ -1,9 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
+	"path"
+	"text/template"
 )
 
 func main() {
@@ -43,14 +44,18 @@ func ShowBooks(w http.ResponseWriter, r *http.Request) {
 		"dalton@example.com",
 		""}
 
-	js, err := json.Marshal(book)
+	pathFiles := path.Join("templates", "index.html")
+	goTemplate, err := template.ParseFiles(pathFiles)
+
+	// js, err := json.Marshal(book)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+	if err := goTemplate.Execute(w, book); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 // MyFirstGoMiddleware this is my first Middleware make in Go Lang
