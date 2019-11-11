@@ -5,21 +5,34 @@ import (
 	"net/http"
 	"path"
 	"text/template"
+
+	"gopkg.in/unrolled/render.v1"
 )
 
 func main() {
 
-	// Middleware stack
-	/* n := negroni.New(
-		negroni.NewRecovery(),
-		negroni.HandlerFunc(MyFirstGoMiddleware),
-		negroni.NewLogger(),
-		negroni.NewStatic(http.Dir("public")),
-	)
+	r := render.New(render.Options{})
+	mux := http.NewServeMux()
 
-	n.Run(":8080")*/
+	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		w.Write([]byte("Welcome, visit sub pages now."))
+	})
 
-	http.HandleFunc("/", ShowBooks)
+	mux.HandleFunc("/data", func(w http.ResponseWriter, req *http.Request) {
+		r.Data(w, http.StatusOK, []byte("Some binary data here."))
+	})
+
+	mux.HandleFunc("/json", func(w http.ResponseWriter, req *http.Request) {
+		r.JSON(w, http.StatusOK, map[string]string{"hello": "json"})
+	})
+
+	mux.HandleFunc("/html", func(w http.ResponseWriter, req *http.Request) {
+		// Assumes you have a template in ./templates called "example.tmpl"
+		// $ mkdir -p templates && echo "<h1>Hello {{.}}.</h1>" > templates/example.tmpl
+		r.HMTL(w, http.StatusOK, "example", nil)
+	})
+
+	// http.HandleFunc("/", ShowBooks)
 	http.ListenAndServe(":8080", nil)
 }
 
