@@ -29,11 +29,11 @@ func main() {
 	mux.HandleFunc("/html", func(w http.ResponseWriter, req *http.Request) {
 		// Assumes you have a template in ./templates called "example.tmpl"
 		// $ mkdir -p templates && echo "<h1>Hello {{.}}.</h1>" > templates/example.tmpl
-		r.HMTL(w, http.StatusOK, "example", nil)
+		// r.HMTL(w, http.StatusOK, "example", nil)
 	})
 
 	// http.HandleFunc("/", ShowBooks)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", mux)
 }
 
 // Book struct
