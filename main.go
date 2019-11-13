@@ -1,38 +1,24 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
-	"github.com/codegangsta/negroni"
-	"github.com/julienschmidt/httprouter"
+	"gopkg.in/unrolled/render.v1"
 )
 
-// HelloWorld Method
-func HelloWorld(res http.ResponseWriter, req *http.Request, p httprouter.Params) {
-	fmt.Fprintf(res, "Hello World")
+// MyController - My struct controller
+type MyController struct {
+	AppController
+	*render.Render
 }
 
-// App complete handler
-func App() http.Handler {
-	n := negroni.Classic()
-
-	m := func(response http.ResponseWriter, request *http.Request, next http.HandlerFunc) {
-		fmt.Fprint(response, "before...")
-		next(response, request)
-		fmt.Fprint(response, "...after")
-	}
-
-	n.Use(negroni.HandlerFunc(m))
-
-	r := httprouter.New()
-
-	r.GET("/", HelloWorld)
-	n.UseHandler(r)
-
-	return n
+// Index - method initial
+func (controller *MyController) Index(rw http.ResponseWriter, request *http.Request) error {
+	controller.JSON(rw, 200, map[string]string{"first_message": "Hello World"})
+	return nil
 }
 
 func main() {
-	http.ListenAndServe(":3000", App())
+	controller := &MyController{Render: render.New(render.Options{})}
+	http.ListenAndServe(":8080", controller.Action(controller.Index))
 }
